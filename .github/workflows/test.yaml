@@ -1,0 +1,36 @@
+name: Test
+
+on:
+  workflow_dispatch: 
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Spin-up the database for tests
+      run: docker run --name mysql -e MYSQL_ROOT_PASSWORD=P@ssw0rd -v $(pwd):/scripts -d mysql:8.0-debian
+
+    - name: Wait for the database service to start 
+      run: sleep 15 
+
+    - name: Run the task code
+      run: docker exec mysql sh -c 'mysql -u root -pP@ssw0rd < /scripts/task.sql'
+
+    - name: Run the SQL test code
+      run: docker exec mysql sh -c 'mysql -u root -pP@ssw0rd < /scripts/test.sql' > log.txt
+    
+    - name: Check the SQL test results 
+      run: |
+        echo "checking the test log:"
+        errors=$(cat log.txt | grep "^Error" || true)
+        if [ -n "$errors" ]; then echo $errors && exit 1; fi
