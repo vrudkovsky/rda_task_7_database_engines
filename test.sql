@@ -18,9 +18,9 @@ SELECT IF( @ProductDescriptionTable = 1, 'ProductDescription table found!', 'Err
 SET @LogsTable := (SELECT count(*)
 FROM   information_schema.TABLES
 WHERE  TABLE_SCHEMA = 'ShopDB'
-AND TABLE_NAME = 'LogsTable'
+AND TABLE_NAME = 'Logs'
 AND ENGINE = 'BLACKHOLE'); 
-SELECT IF( @ProductDescriptionTable = 1, 'LogsTable table found!', 'Error: unable to verify LogsTable table');
+SELECT IF( @ProductDescriptionTable = 1, 'Logs table found!', 'Error: unable to verify Logs table');
 
 -- Verify ProductReporting table
 SET @ProductReportingTable := (SELECT count(*)
